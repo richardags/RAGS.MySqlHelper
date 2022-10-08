@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS `telegram` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `telegram`;
+
+CREATE TABLE `users` (
+  `telegram_id` bigint(11) NOT NULL,
+  `expire_at` datetime NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`telegram_id`);
