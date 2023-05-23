@@ -14,7 +14,7 @@ namespace Debug
         static void Main(string[] args)
         {
             //GetUser
-            DatabaseResult result = GetUser("123456789");
+            MySqlHelperData result = GetUser("123456789");
 
             if(result.error == null)
             {
@@ -29,7 +29,7 @@ namespace Debug
             }
 
             //GetUsers
-            DatabaseResult result2 = GetUsers();
+            MySqlHelperData result2 = GetUsers();
 
             if (result2.error == null)
             {
@@ -43,7 +43,7 @@ namespace Debug
             }
 
             //AddUser
-            DatabaseResult result3 = AddUser("123456789", DateTimeOffset.Now);
+            MySqlHelperData result3 = AddUser("123456789", DateTimeOffset.Now);
 
             if (result3.error == null)
             {
@@ -58,7 +58,7 @@ namespace Debug
             }
 
             //AddUser
-            DatabaseResult result4 = DeleteUser("123456789");
+            MySqlHelperData result4 = DeleteUser("123456789");
 
             if (result4.error == null)
             {
@@ -76,7 +76,7 @@ namespace Debug
             Console.ReadKey();
         }
 
-        public static DatabaseResult GetUser(string telegram_id)
+        public static MySqlHelperData GetUser(string telegram_id)
         {
             string query =
                 "SELECT JSON_OBJECT('telegramId', telegram_id, 'expireAt', expire_at) AS USER " +
@@ -100,19 +100,19 @@ namespace Debug
                         user = JsonConvert.DeserializeObject<DatabaseUser>((string)data["USER"]);
                     }
 
-                    return new DatabaseResult(data: user);
+                    return new MySqlHelperData(data: user);
                 }
                 else
                 {
-                    return new DatabaseResult(data: null);
+                    return new MySqlHelperData(data: null);
                 }
             }
             else
             {
-                return new DatabaseResult(error: result.error);
+                return new MySqlHelperData(error: result.error);
             }
         }        
-        public static DatabaseResult GetUsers()
+        public static MySqlHelperData GetUsers()
         {
             string query = "SELECT JSON_OBJECT('telegramId', telegram_id, 'expireAt', expire_at) AS USER FROM users;";
 
@@ -133,19 +133,19 @@ namespace Debug
                             );
                     }
 
-                    return new DatabaseResult(data: users);
+                    return new MySqlHelperData(data: users);
                 }
                 else
                 {
-                    return new DatabaseResult(data: users);
+                    return new MySqlHelperData(data: users);
                 }
             }
             else
             {
-                return new DatabaseResult(error: result.error);
+                return new MySqlHelperData(error: result.error);
             }
         }
-        public static DatabaseResult AddUser(string telegram_id, DateTimeOffset expire)
+        public static MySqlHelperData AddUser(string telegram_id, DateTimeOffset expire)
         {
             string query = "INSERT INTO users (telegram_id, expire_at) VALUES (@telegram_id, @expire_at);";
 
@@ -157,7 +157,7 @@ namespace Debug
 
             if (result.error == null)
             {
-                return new DatabaseResult(data: result.affected_rows > 0);
+                return new MySqlHelperData(data: result.affected_rows > 0);
             }
             else
             {
@@ -165,15 +165,15 @@ namespace Debug
                     ((MySqlException)result.error).Number == 1062 //already exists telegram_id in database
                     )
                 {
-                    return new DatabaseResult(data: false);
+                    return new MySqlHelperData(data: false);
                 }
                 else
                 {
-                    return new DatabaseResult(error: result.error);
+                    return new MySqlHelperData(error: result.error);
                 }
             }
         }
-        public static DatabaseResult DeleteUser(string telegram_id)
+        public static MySqlHelperData DeleteUser(string telegram_id)
         {
             string query = "DELETE FROM users WHERE telegram_id = @telegram_id;";
 
@@ -184,11 +184,11 @@ namespace Debug
 
             if (result.error == null)
             {
-                return new DatabaseResult(data: result.affected_rows > 0);
+                return new MySqlHelperData(data: result.affected_rows > 0);
             }
             else
             {
-                return new DatabaseResult(error: result.error);
+                return new MySqlHelperData(error: result.error);
             }
         }
     }
